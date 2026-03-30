@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3NJU - Acceso</title>
+    <style>
+        /* Estilo general del login y contenido */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Black', Gadget, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #2b0b4d, #000000);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Efecto de partículas de fondo */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: rgba(255, 0, 255, 0.7);
+            border-radius: 50%;
+            animation: float 8s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Estilo del login */
+        .login-container {
+            background: linear-gradient(145deg, rgba(0,0,0,0.9), rgba(43,11,77,0.9));
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.6), inset 0 0 20px rgba(0, 255, 255, 0.2);
+            margin-bottom: 3rem;
+            text-align: center;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        .login-container:hover {
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.8), inset 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Imagen circular como en Among Us */
+        .login-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #ff00ff;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.7), 0 0 15px rgba(0, 255, 255, 0.4);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-image: url(https://raw.githubusercontent.com/BotDark01/DARKDATA/main/IMAGENES/S3NJU.jpg);
+            background-size: cover;
+            background-position: center;
+        }
+
+        .login-title {
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff, 0 0 30px #00ffff;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .login-title::before,
+        .login-title::after {
+            content: '⛧';
+            margin: 0 1rem;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .form-label {
+            color: #00ffff;
+            display: block;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 8px #00ffff;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            background-color: rgba(34, 34, 34, 0.8);
+            color: #fff;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.4), inset 0 0 5px rgba(0, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(255, 0, 255, 0.2);
+            background-color: rgba(34, 34, 34, 1);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 70%;
+            transform: translateY(-50%);
+            color: #00ffff;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ffff;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        .login-btn {
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            border: none;
+            padding: 1.1rem 2.5rem;
+            border-radius: 10px;
+            color: #000;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(30deg) translateX(-100%);
+            }
+            100% {
+                transform: rotate(30deg) translateX(100%);
+            }
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
+        }
+
+        .login-btn:active {
+            transform: scale(1.02);
+        }
+
+        /* Estilo del contenido usuario normal */
+        .content-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            z-index: 1;
+        }
+
+        /* Estilo del panel de administrador */
+        .admin-panel {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            max-width: 800px;
+            z-index: 1;
+            background: linear-gradient(145deg, rgba(0,0,0,0.95), rgba(43,11,77,0.95));
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.6), inset 0 0 20px rgba(255, 0, 255, 0.2);
+        }
+
+        .admin-title {
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff, 0 0 30px #ff00ff;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .admin-controls {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .group-editor {
+            background: linear-gradient(145deg, rgba(0,0,0,0.8), rgba(43,11,77,0.8));
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .editor-title {
+            color: #ff00ff;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .editor-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            background-color: rgba(34, 34, 34, 0.8);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .editor-input:focus {
+            outline: none;
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+        }
+
+        .save-btn {
+            background: linear-gradient(90deg, #25d366, #128c7e);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(37, 211, 102, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.7);
+        }
+
+        .preview-title {
+            color: #00ffff;
+            margin: 1.5rem 0 1rem;
+            font-size: 1.3rem;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            width: 100%;
+        }
+
+        .group-card {
+            background: linear-gradient(145deg, rgba(0,0,0,0.9), rgba(43,11,77,0.9));
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .group-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.7);
+        }
+
+        /* Imágenes personalizadas */
+        .profile-image {
+            width: 100%;
+            max-width: 400px;
+            height: 250px;
+            border-radius: 15px;
+            border: 3px solid #ff00ff;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 4s ease infinite alternate;
+            background-position: center;
+            background-size: cover;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 40px rgba(255, 0, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.5);
+            }
+        }
+
+        .title-text {
+            font-size: 1.6rem;
+            background: linear-gradient(90deg, #ff00ff, #ff9900, #00ffff, #ff00ff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .whatsapp-link {
+            background: linear-gradient(90deg, #25d366, #128c7e);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.5);
+            transition: all 0.3s ease;
+            display: inline-block;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .whatsapp-link:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.7);
+        }
+
+        .group-divider {
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff00ff, transparent);
+            margin: 2rem 0;
+            animation: dividerPulse 3s ease infinite alternate;
+        }
+
+        @keyframes dividerPulse {
+            0% { opacity: 0.5; width: 60%; }
+            100% { opacity: 1; width: 80%; }
+        }
+
+        /* Botón de cerrar sesión */
+        .logout-btn {
+            background: linear-gradient(90deg, #ff4444, #cc0000);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.7);
+        }
+
+        /* Mensaje de guardado exitoso */
+        .success-message {
+            display: none;
+            color: #25d366;
+            text-shadow: 0 0 10px #25d366;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 1.5rem 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .login-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .login-title {
+                font-size: 1.8rem;
+            }
+
+            .form-input {
+                padding: 0.8rem;
+                font-size: 1rem;
+            }
+
+            .login-btn {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+            }
+
+            .title-text {
+                font-size: 1.3rem;
+            }
+
+            .whatsapp-link {
+                padding: 0.8rem 1.5rem;
+                font-size: 1.1rem;
+            }
+
+            .profile-image {
+                height: 200px;
+                max-width: 300px;
+            }
+
+            .admin-panel {
+                padding: 1.5rem;
+                max-width: 95%;
+            }
+
+            .admin-title {
+                font-size: 2rem;
+            }
+
+            .editor-input {
+                font-size: 0.9rem;
+                padding: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Efecto de partículas de fondo -->
+    <div class="bg-particles" id="bg-particles"></div>
+
+    <!-- Contenedor del Login -->
+    <div class="login-container" id="login-container">
+        <!-- Imagen circular como en Among Us -->
+        <div class="login-image" id="login-image"></div>
+        <h2 class="login-title">S3NJU LOGIN</h2>
+        <div class="form-group">
+            <label for="username" class="form-label">USUARIO</label>
+            <input type="text" id="username" class="form-input" placeholder="Ingresa tu usuario">
+        </div>
+        <div class="form-group">
+            <label for="password" class="form-label">CONTRASEÑA</label>
+            <input type="password" id="password" class="form-input" placeholder="Ingresa tu contraseña">
+            <span class="password-toggle" id="password-toggle">👁️</span>
+        </div>
+        <button class="login-btn" id="login-btn">ACCEDER</button>
+    </div>
+
+    <!-- Contenedor del Contenido Usuario Normal -->
+    <div class="content-container" id="content-container">
+        <div class="groups-grid">
+            <!-- Grupo 1: BEST GROUP H3NTAI -->
+            <div class="group-card">
+                <div class="profile-image" id="profile-image-1"></div>
+                <div class="title-text" id="group1-title">BEST GROUP H3NTAI</div>
+                <a href="https://chat.whatsapp.com/HgxEviOF6hV12Df83Sp9AJ" target="_blank" class="whatsapp-link" id="group1-link">Unirse al grupo de WhatsApp</a>
+            </div>
+
+            <div class="group-divider"></div>
+
+            <!-- Grupo 2: DARK BOT -->
+            <div class="group-card">
+                <div class="profile-image" id="profile-image-2"></div>
+                <div class="title-text" id="group2-title">DARK BOT</div>
+                <a href="https://chat.whatsapp.com/DWithyS96VJA1OA7mdNazv" target="_blank" class="whatsapp-link" id="group2-link">Unirse al grupo de WhatsApp</a>
+            </div>
+        </div>
+        <button class="logout-btn" id="user-logout-btn">CERRAR SESIÓN</button>
+    </div>
+
+    <!-- Panel de Administrador -->
+    <div class="admin-panel" id="admin-panel">
+        <h2 class="admin-title">PANEL DE ADMINISTRADOR</h2>
+        <div class="admin-controls">
+            <!-- Editor Grupo 1 -->
+            <div class="group-editor">
+                <h3 class="editor-title">EDITAR GRUPO 1</h3>
+                <input type="text" class="editor-input" id="admin-group1-title" placeholder="Nombre del grupo">
+                <input type="text" class="editor-input" id="admin-group1-link" placeholder="Enlace de WhatsApp">
+                <input type="text" class="editor-input" id="admin-group1-img" placeholder="URL de la imagen">
+                <button class="save-btn" id="save-group1-btn">GUARDAR CAMBIOS</button>
+                <div class="success-message" id="success-group1">✅ Cambios guardados exitosamente!</div>
+                <h4 class="preview-title">PREVISUALIZACIÓN</h4>
+                <div class="profile-image" id="admin-preview1"></div>
+                <div class="title-text" id="admin-preview1-title"></div>
+            </div>
+
+            <!-- Editor Grupo 2 -->
+            <div class="group-editor">
+                <h3 class="editor-title">EDITAR GRUPO 2</h3>
+                <input type="text" class="editor-input" id="admin-group2-title" placeholder="Nombre del grupo">
+                <input type="text" class="editor-input" id="admin-group2-link" placeholder="Enlace de WhatsApp">
+                <input type="text" class="editor-input" id="admin-group2-img" placeholder="URL de la imagen">
+                <button class="save-btn" id="save-group2-btn">GUARDAR CAMBIOS</button>
+                <div class="success-message" id="success-group2">✅ Cambios guardados exitosamente!</div>
+                <h4 class="preview-title">PREVISUALIZACIÓN</h4>
+                <div class="profile-image" id="admin-preview2"></div>
+                <div class="title-text" id="admin-preview2-title"></div>
+            </div>
+        </div>
+        <button class="logout-btn" id="admin-logout-btn">CERRAR SESIÓN</button>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const loginBtn = document.getElementById('login-btn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginContainer = document.getElementById('login-container');
+        const contentContainer = document.getElementById('content-container');
+        const adminPanel = document.getElementById('admin-panel');
+        const passwordToggle = document.getElementById('password-toggle');
+        const bgParticles = document.getElementById('bg-particles');
+
+        // Datos iniciales de los grupos (se guardarán en localStorage)
+        let groupData = {
+            group1: {
+                title: "BEST GROUP H3NTAI",
+                link: "https://chat.whatsapp.com/HgxEviOF6hV12Df83Sp9AJ",
+                img: "https://raw.githubusercontent.com/BotDark01/DARKDATA/main/IMAGENES/H3NTAI.jpg"
+            },
+            group2: {
+                title: "DARK BOT",
+                link: "https://chat.whatsapp.com/DWithyS96VJA1OA7mdNazv",
+                img: "https://raw.githubusercontent.com/BotDark01/DARKDATA/main/IMAGENES/DARKBOT.jpg"
+            }
+        };
+
+        // Cargar datos guardados en localStorage al iniciar
+        if (localStorage.getItem('groupData')) {
+            groupData = JSON.parse(localStorage.getItem('groupData'));
+        }
+
+        // Crear efecto de partículas de fondo
+        function createParticles() {
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 8}s`;
+                particle.style.animationDuration = `${5 + Math.random() * 10}s`;
+                bgParticles.appendChild(particle);
+            }
+        }
+
+        // Alternar visibilidad de contraseña
+        passwordToggle.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordToggle.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        // Cargar contenido de grupos (para usuario normal)
+        function loadGroupContent() {
+            // Grupo 1
+            document.getElementById('profile-image-1').style.backgroundImage = `url(${groupData.group1.img})`;
+            document.getElementById('group1-title').textContent = groupData.group1.title;
+            document.getElementById('group1-link').href = groupData.group1.link;
+            
+            // Grupo 2
+            document.getElementById('profile-image-2').style.backgroundImage = `url(${groupData.group2.img})`;
+            document.getElementById('group2-title').textContent = groupData.group2.title;
+            document.getElementById('group2-link').href = groupData.group2.link;
+        }
+
+        // Cargar datos en panel de admin
+        function loadAdminPanel() {
+            // Grupo 1
+            document.getElementById('admin-group1-title').value = groupData.group1.title;
+            document.getElementById('admin-group1-link').value = groupData.group1.link;
+            document.getElementById('admin-group1-img').value = groupData.group1.img;
+            document.getElementById('admin-preview1').style.backgroundImage = `url(${groupData.group1.img})`;
+            document.getElementById('admin-preview1-title').textContent = groupData.group1.title;
+            
+            // Grupo 2
+            document.getElementById('admin-group2-title').value = groupData.group2.title;
+            document.getElementById('admin-group2-link').value = groupData.group2.link;
+            document.getElementById('admin-group2-img').value = groupData.group2.img;
+            document.getElementById('admin-preview2').style.backgroundImage = `url(${groupData.group2.img})`;
+            document.getElementById('admin-preview2-title').textContent = groupData.group2.title;
+        }
+
+        // Guardar cambios de grupo 1
+        document.getElementById('save-group1-btn').addEventListener('click', () => {
+            groupData.group1.title = document.getElementById('admin-group1-title').value.trim();
+            groupData.group1.link = document.getElementById('admin-group1-link').value.trim();
+            groupData.group1.img = document.getElementById('admin-group1-img').value.trim();
+            
+            // Actualizar previsualización
+            document.getElementById('admin-preview1').style.backgroundImage = `url(${groupData.group1.img})`;
+            document.getElementById('admin-preview1-title').textContent = groupData.group1.title;
+            
+            // Guardar en localStorage
+            localStorage.setItem('groupData', JSON.stringify(groupData));
+            
+            // Mostrar mensaje de éxito
+            const successMsg = document.getElementById('success-group1');
+            successMsg.style.display = 'block';
+            setTimeout(() => successMsg.style.display = 'none', 3000);
+        });
+
+        // Guardar cambios de grupo 2
+        document.getElementById('save-group2-btn').addEventListener('click', () => {
+            groupData.group2.title = document.getElementById('admin-group2-title').value.trim();
+            groupData.group2.link = document.getElementById('admin-group2-link').value.trim();
+            groupData.group2.img = document.getElementById('admin-group2-img').value.trim();
+            
+            // Actualizar previsualización
+            document.getElementById('admin-preview2').style.backgroundImage = `url(${groupData.group2.img})`;
+            document.getElementById('admin-preview2-title').textContent = groupData.group2.title;
+            
+            // Guardar en localStorage
+            localStorage.setItem('groupData', JSON.stringify(groupData));
+            
+            // Mostrar mensaje de éxito
+            const successMsg = document.getElementById('success-group2');
+            successMsg.style.display = 'block';
+            setTimeout(() => successMsg.style.display = 'none', 3000);
+        });
+
+        // Verificar credenciales al hacer clic en Acceder
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Acceso usuario normal
+            if (username === 'PARADICE' && password === '1234') {
+                loginContainer.style.opacity = '0';
+                loginContainer.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    loginContainer.style.display = 'none';
+                    contentContainer.style.display = 'flex';
+                    contentContainer.style.opacity = '0';
+                    contentContainer.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        contentContainer.style.opacity = '1';
+                        contentContainer.style.transform = 'scale(1)';
+                        contentContainer.style.transition = 'all 0.5s ease';
+                        loadGroupContent(); // Cargar datos de grupos
+                    }, 50);
+                }, 300);
+            } 
+            // Acceso administrador
+            else if (username === 'S3NJU' && password === '764') {
+                loginContainer.style.opacity = '0';
+                loginContainer.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    loginContainer.style.display = 'none';
+                    adminPanel.style.display = 'flex';
+                    adminPanel.style.opacity = '0';
+                    adminPanel.style.transform = 'scale(0.9)';
+                    
+                    setTimeout(() => {
+                        adminPanel.style.opacity = '1';
+                        adminPanel.style.transform = 'scale(1)';
+                        adminPanel.style.transition = 'all 0.5s ease';
+                        loadAdminPanel(); // Cargar datos en panel admin
+                    }, 50);
+                }, 300);
+            } 
+            // Credenciales incorrectas
+            else {
+                loginContainer.style.transform = 'scale(0.95)';
+                loginContainer.style.boxShadow = '0 0 40px rgba(255, 0, 0, 0.6)';
+                
+                setTimeout(() => {
+                    loginContainer.style.transform = 'scale(1)';
+                    loginContainer.style.boxShadow = '0 0 40px rgba(255, 0, 255, 0.6), inset 0 0 20px rgba(0, 255, 255, 0.2)';
+                }, 300);
+                
+                alert('Usuario o contraseña incorrectos. Intenta con PARADICE/1234');
+            }
+        });
+
+        // Cerrar sesión desde usuario normal
+        document.getElementById('user-logout-btn').addEventListener('click', () => {
+            contentContainer.style.opacity = '0';
+            contentContainer.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                contentContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+                loginContainer.style.opacity = '0';
+                loginContainer.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    loginContainer.style.opacity = '1';
+                    loginContainer.style.transform = 'scale(1)';
+                    loginContainer.style.transition = 'all 0.5s ease';
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                }, 50);
+            }, 300);
+        });
+
+        // Cerrar sesión desde panel de administrador
+        document.getElementById('admin-logout-btn').addEventListener('click', () => {
+            adminPanel.style.opacity = '0';
+            adminPanel.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                adminPanel.style.display = 'none';
+                loginContainer.style.display = 'block';
+                loginContainer.style.opacity = '0';
+                loginContainer.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    loginContainer.style.opacity = '1';
+                    loginContainer.style.transform = 'scale(1)';
+                    loginContainer.style.transition = 'all 0.5s ease';
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                }, 50);
+            }, 300);
+        });
+
+        // Permitir acceso con Enter
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+
+        // Actualizar previsualización en tiempo real en panel admin
+        document.getElementById('admin-group1-title').addEventListener('input', (e) => {
+            document.getElementById('admin-preview1-title').textContent = e.target.value.trim() || 'Nombre del grupo';
+        });
+
+        document.getElementById('admin-group1-img').addEventListener('input', (e) => {
+            const imgUrl = e.target.value.trim();
+            if (imgUrl) {
+                document.getElementById('admin-preview1').style.backgroundImage = `url(${imgUrl})`;
+            }
+        });
+
+        document.getElementById('admin-group2-title').addEventListener('input', (e) => {
+            document.getElementById('admin-preview2-title').textContent = e.target.value.trim() || 'Nombre del grupo';
+        });
+
+        document.getElementById('admin-group2-img').addEventListener('input', (e) => {
+            const imgUrl = e.target.value.trim();
+            if (imgUrl) {
+                document.getElementById('admin-preview2').style.backgroundImage = `url(${imgUrl})`;
+            }
+        });
+
+        // Inicializar efectos
+        window.addEventListener('load', () => {
+            createParticles();
+                });
+
+        // -------------------- FUNCIONALIDADES ADICIONALES --------------------
+        // 1. Detectar modo oscuro/claro del sistema y adaptar el fondo (opcional)
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            const body = document.body;
+            body.style.background = 'radial-gradient(circle at center, #f0e6ff, #e0d4ff)';
+            
+            // Ajustar colores de partículas para modo claro
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(particle => {
+                particle.style.backgroundColor = 'rgba(120, 60, 200, 0.7)';
+            });
+        }
+
+        // 2. Validación de URLs en campos de imagen/enlace del panel admin
+        function validateUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Agregar validación al guardar cambios
+        document.getElementById('save-group1-btn').addEventListener('click', () => {
+            const imgUrl = document.getElementById('admin-group1-img').value.trim();
+            const linkUrl = document.getElementById('admin-group1-link').value.trim();
+            
+            if (imgUrl && !validateUrl(imgUrl)) {
+                alert('⚠️ La URL de la imagen no es válida');
+                return;
+            }
+            if (linkUrl && !validateUrl(linkUrl)) {
+                alert('⚠️ El enlace de WhatsApp no es válido');
+                return;
+            }
+        });
+
+        document.getElementById('save-group2-btn').addEventListener('click', () => {
+            const imgUrl = document.getElementById('admin-group2-img').value.trim();
+            const linkUrl = document.getElementById('admin-group2-link').value.trim();
+            
+            if (imgUrl && !validateUrl(imgUrl)) {
+                alert('⚠️ La URL de la imagen no es válida');
+                return;
+            }
+            if (linkUrl && !validateUrl(linkUrl)) {
+                alert('⚠️ El enlace de WhatsApp no es válido');
+                return;
+            }
+        });
+
+        // 3. Botón para restaurar datos por defecto en panel admin
+        const restoreBtn = document.createElement('button');
+        restoreBtn.textContent = 'RESTAURAR DATOS POR DEFECTO';
+        restoreBtn.style.background = 'linear-gradient(90deg, #ff9900, #ff6600)';
+        restoreBtn.style.border = 'none';
+        restoreBtn.style.padding = '1rem 2rem';
+        restoreBtn.style.borderRadius = '10px';
+        restoreBtn.style.color = '#fff';
+        restoreBtn.style.fontSize = '1.1rem';
+        restoreBtn.style.fontWeight = 'bold';
+        restoreBtn.style.cursor = 'pointer';
+        restoreBtn.style.boxShadow = '0 0 20px rgba(255, 153, 0, 0.5)';
+        restoreBtn.style.marginBottom = '1.5rem';
+        restoreBtn.style.transition = 'all 0.3s ease';
+
+        restoreBtn.addEventListener('mouseover', () => {
+            restoreBtn.style.transform = 'scale(1.05)';
+            restoreBtn.style.boxShadow = '0 0 30px rgba(255, 153, 0, 0.7)';
+        });
+
+        restoreBtn.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de restaurar los datos originales? Se borrarán todos los cambios guardados.')) {
+                groupData = {
+                    group1: {
+                        title: "BEST GROUP H3NTAI",
+                        link: "https://chat.whatsapp.com/HgxEviOF6hV12Df83Sp9AJ",
+                        img: "https://raw.githubusercontent.com/BotDark01/DARKDATA/main/IMAGENES/H3NTAI.jpg"
+                    },
+                    group2: {
+                        title: "DARK BOT",
+                        link: "https://chat.whatsapp.com/DWithyS96VJA1OA7mdNazv",
+                        img: "https://raw.githubusercontent.com/BotDark01/DARKDATA/main/IMAGENES/DARKBOT.jpg"
+                    }
+                };
+                localStorage.setItem('groupData', JSON.stringify(groupData));
+                loadAdminPanel();
+                alert('✅ Datos restaurados correctamente!');
+            }
+        });
+
+        // Insertar botón en el panel de administrador
+        adminPanel.insertBefore(restoreBtn, adminPanel.firstChild.nextSibling);
+
+        // 4. Mostrar tiempo de sesión activa
+        let sessionStartTime;
+        const sessionTimer = document.createElement('div');
+        sessionTimer.style.color = '#00ffff';
+        sessionTimer.style.textShadow = '0 0 8px #00ffff';
+        sessionTimer.style.marginBottom = '1rem';
+        sessionTimer.style.fontSize = '1rem';
+
+        // Iniciar contador cuando se accede a cualquier panel
+        function startSessionTimer() {
+            sessionStartTime = new Date();
+            adminPanel.appendChild(sessionTimer);
+            contentContainer.appendChild(sessionTimer);
+
+            setInterval(() => {
+                const now = new Date();
+                const diffMs = now - sessionStartTime;
+                const diffMin = Math.floor(diffMs / 60000);
+                const diffSec = Math.floor((diffMs % 60000) / 1000);
+                sessionTimer.textContent = `Sesión activa: ${diffMin}m ${diffSec}s`;
+            }, 1000);
+        }
+
+        // Asignar inicio del contador a los accesos
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            if ((username === 'PARADICE' && password === '1234') || (username === 'S3NJU' && password === '764')) {
+                setTimeout(startSessionTimer, 500);
+            }
+        });
+
+        // 5. Optimización de carga de imágenes (evitar errores de carga)
+        function handleImageError(elementId, fallbackUrl) {
+            const element = document.getElementById(elementId);
+            element.addEventListener('error', () => {
+                element.style.backgroundImage = `url(${fallbackUrl})`;
+                alert(`⚠️ No se pudo cargar la imagen, se usará una imagen de respaldo`);
+            });
+        }
+
+        // Configurar imágenes de respaldo
+        const fallbackImg = "https://raw.githubusercontent.com/BotDark01/DARKDATA/main/IMAGENES/S3NJU.jpg";
+        handleImageError('profile-image-1', fallbackImg);
+        handleImageError('profile-image-2', fallbackImg);
+        handleImageError('admin-preview1', fallbackImg);
+        handleImageError('admin-preview2', fallbackImg);
+        handleImageError('login-image', fallbackImg);
+
+    </script>
+</body>
+</html>
